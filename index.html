@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code pill</title>
+<meta name="description" content="Code pill: a short tag that tells humans and machines what they may do with your work.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: a package leaflet. One reading column for prose, wider panels for the tools,
+   numbered sections like a medicine leaflet, the pill drawn as a two-tone capsule. */
+:root {
+  --bg: #F4F5F8;
+  --surface: #FFFFFF;
+  --ink: #141A2E;
+  --muted: #586079;
+  --line: #DADEE8;
+  --accent: #2B47D9;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E5E9FC;
+  --take: #C0244A;
+  --take-soft: #FBE6EB;
+  --give: #0B7F53;
+  --give-soft: #DFF3E9;
+  --cond: #8F5A00;
+  --cond-soft: #FBEFD6;
+  --code-bg: #ECEEF4;
+
+  --f-display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.6rem;
+  --step-3: clamp(1.8rem, 4vw, 2.4rem);
+  --step-4: clamp(2.6rem, 9vw, 5.2rem);
+  --radius: 10px;
+  --wide: 1080px;
+  --prose: 68ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1020; --surface: #151A2E; --ink: #E7E9F3; --muted: #9AA1BC; --line: #283050;
+    --accent: #7D92FF; --accent-ink: #0D1020; --accent-soft: #1C2452;
+    --take: #FF7491; --take-soft: #3A1623; --give: #46CF96; --give-soft: #0F2F21;
+    --cond: #F2B84B; --cond-soft: #33270C; --code-bg: #10142A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1020; --surface: #151A2E; --ink: #E7E9F3; --muted: #9AA1BC; --line: #283050;
+  --accent: #7D92FF; --accent-ink: #0D1020; --accent-soft: #1C2452;
+  --take: #FF7491; --take-soft: #3A1623; --give: #46CF96; --give-soft: #0F2F21;
+  --cond: #F2B84B; --cond-soft: #33270C; --code-bg: #10142A;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 var(--step-0)/1.6 var(--f-body);
+  padding-inline: 16px;
+}
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+a { color: var(--accent); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, kbd, pre, .mono { font-family: var(--f-mono); }
+code { font-size: 0.92em; background: var(--code-bg); padding: 0.05em 0.35em; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--f-display); font-stretch: 118%; line-height: 1.1; text-wrap: balance; margin: 0; }
+h2 { font-size: var(--step-3); font-weight: 750; }
+h3 { font-size: var(--step-1); font-weight: 700; }
+p { margin: 0; }
+
+.wrap { max-width: var(--wide); margin-inline: auto; }
+.prose { max-width: var(--prose); }
+.stack { display: grid; gap: 1rem; }
+.label {
+  font-family: var(--f-display); font-stretch: 112%;
+  font-size: var(--step--1); font-weight: 650;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ---------- Capsule ---------- */
+.capsule {
+  display: inline-flex; align-items: stretch; max-width: 100%;
+  border: 2px solid var(--accent); border-radius: 999px; overflow: hidden;
+  font-family: var(--f-mono); font-weight: 600; line-height: 1; white-space: nowrap;
+}
+.capsule > span { padding: 0.45em 0.6em; display: flex; align-items: center; }
+.capsule .cap-l { background: var(--accent); color: var(--accent-ink); padding-left: 0.85em; }
+.capsule .cap-r { background: var(--surface); color: var(--ink); padding-right: 0.85em; min-width: 2.2em; }
+.capsule.sm { font-size: 0.9rem; border-width: 1.5px; }
+.capsule.sm > span { padding: 0.3em 0.45em; }
+.capsule.sm .cap-l { padding-left: 0.65em; }
+.capsule.sm .cap-r { padding-right: 0.65em; }
+
+/* ---------- Header / hero ---------- */
+.masthead { padding-block: 1.25rem 0; }
+.masthead .wrap { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 0.75rem; }
+.hero { padding-block: clamp(2rem, 6vw, 4rem) 2rem; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+.hero h1 { font-size: var(--step-4); font-weight: 800; font-stretch: 125%; letter-spacing: -0.01em; }
+.hero .lede { font-size: var(--step-1); line-height: 1.5; margin-top: 1rem; max-width: 34ch; }
+.hero .thesis {
+  margin-top: 1.5rem; padding: 1rem 1.25rem; border-left: 4px solid var(--accent);
+  background: var(--surface); border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: var(--step-1); font-weight: 500; max-width: 40ch;
+}
+.hero .thesis strong { color: var(--take); font-weight: 600; }
+.toc { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1.25rem 1.25rem 1rem; }
+.toc ol { margin: 0.75rem 0 0; padding-left: 1.4rem; display: grid; gap: 0.35rem; }
+.toc li::marker { font-family: var(--f-display); font-weight: 700; color: var(--accent); }
+.toc a { color: var(--ink); text-decoration: none; }
+.toc a:hover { color: var(--accent); text-decoration: underline; }
+
+/* ---------- Reader (decoder) ---------- */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: clamp(1rem, 3vw, 2rem); }
+.reader { display: grid; gap: 1.5rem; }
+.reader-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem 2rem; align-items: start; }
+.reader-top > * { min-width: 0; }
+.pill-show { display: grid; gap: 0.75rem; justify-items: start; }
+.pill-show .capsule { font-size: clamp(1.4rem, 6vw, 2.6rem); }
+.pill-show .caption { color: var(--muted); }
+.field { display: grid; gap: 0.35rem; }
+.field-row { display: flex; gap: 0.5rem; }
+input[type="text"], textarea {
+  font: 500 1.05rem/1.4 var(--f-mono); color: var(--ink); background: var(--bg);
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 0.6rem 0.75rem; width: 100%; min-width: 0;
+}
+input[type="text"]:focus, textarea:focus { border-color: var(--accent); outline: none; }
+.err { color: var(--take); font-size: var(--step--1); }
+.btn {
+  font: 600 var(--step--1)/1 var(--f-body); color: var(--ink); background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 0.6rem 0.9rem; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.08); color: var(--accent-ink); }
+
+.toggles { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 0.5rem; }
+.tog {
+  display: grid; gap: 0.15rem; justify-items: start; text-align: left;
+  font: inherit; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line);
+  border-radius: 10px; padding: 0.5rem 0.6rem; cursor: pointer;
+}
+.tog .k { font: 600 1.25rem/1 var(--f-mono); }
+.tog .n { font-size: 0.75rem; line-height: 1.2; color: var(--muted); }
+.tog:hover { border-color: var(--accent); }
+.tog[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.tog[aria-pressed="true"] .n { color: var(--accent-ink); opacity: 0.85; }
+
+.rights { display: grid; border-top: 1px solid var(--line); }
+.right { display: grid; grid-template-columns: minmax(0, 14rem) 7.5rem minmax(0, 1fr); gap: 0.25rem 1rem; padding-block: 0.7rem; border-bottom: 1px solid var(--line); align-items: baseline; }
+.right .what { font-weight: 600; }
+.right .what small { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+.chip { display: inline-block; font: 600 0.75rem/1 var(--f-body); letter-spacing: 0.04em; text-transform: uppercase; padding: 0.35rem 0.55rem; border-radius: 999px; white-space: nowrap; justify-self: start; }
+.chip.yes { background: var(--give-soft); color: var(--give); }
+.chip.if { background: var(--cond-soft); color: var(--cond); }
+.chip.no { background: var(--take-soft); color: var(--take); }
+.right .why { color: var(--ink); }
+.right .why .by { font-family: var(--f-mono); font-weight: 600; color: var(--muted); margin-right: 0.35rem; }
+.duties { display: grid; gap: 0.4rem; margin: 0; padding-left: 1.2rem; }
+.duties li::marker { color: var(--accent); }
+
+/* ---------- Sections ---------- */
+section.sec { padding-block: clamp(2.5rem, 7vw, 4.5rem) 0; }
+.sec-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 1rem; align-items: baseline; margin-bottom: 1.5rem; }
+.sec-num { font-family: var(--f-display); font-stretch: 125%; font-weight: 800; font-size: var(--step-3); color: var(--accent); line-height: 1.1; }
+.sec-head p { grid-column: 2; color: var(--muted); margin-top: 0.5rem; max-width: var(--prose); }
+
+.states { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.state { border-top: 3px solid var(--line); padding-top: 1rem; display: grid; gap: 0.6rem; align-content: start; }
+.state.s2 { border-top-color: var(--give); }
+.state.s3 { border-top-color: var(--accent); }
+.state .what { font-family: var(--f-mono); font-weight: 600; min-height: 2rem; display: flex; align-items: center; }
+.state p { color: var(--ink); }
+
+.anatomy { margin-top: 2rem; overflow-x: auto; padding-bottom: 0.5rem; }
+.anat { display: inline-grid; grid-auto-flow: column; gap: 2px; font-family: var(--f-mono); }
+.anat .tok { display: grid; gap: 0.5rem; justify-items: center; }
+.anat .tok b { font-size: clamp(1.4rem, 5vw, 2.4rem); font-weight: 600; padding: 0.25rem 0.4rem; border-bottom: 3px solid var(--line); }
+.anat .tok.v b { border-color: var(--accent); }
+.anat .tok.l b { border-color: var(--take); }
+.anat .tok.i b { border-color: var(--give); }
+.anat .tok span { font-family: var(--f-body); font-size: 0.78rem; color: var(--muted); text-align: center; max-width: 9rem; line-height: 1.3; }
+
+.groups { display: grid; gap: 2rem; }
+.group h3 { margin-bottom: 0.25rem; }
+.group > p { color: var(--muted); margin-bottom: 1rem; max-width: var(--prose); }
+.letters { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
+.letter { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.2rem; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.2rem 1rem; align-content: start; }
+.letter .big {
+  grid-row: span 3; width: 3rem; height: 3rem; border-radius: 999px; display: grid; place-items: center;
+  font: 600 1.5rem/1 var(--f-mono); background: var(--accent-soft); color: var(--accent);
+}
+.letter.stop .big { background: var(--take-soft); color: var(--take); }
+.letter.info .big { background: var(--code-bg); color: var(--muted); }
+.letter h4 { margin: 0; font-family: var(--f-display); font-stretch: 112%; font-size: 1.05rem; font-weight: 700; }
+.letter .takes { font-size: 0.92rem; }
+.letter .takes b { font-weight: 600; color: var(--take); }
+.letter .ex { font-size: 0.88rem; color: var(--muted); }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; }
+.tab {
+  font: 600 var(--step--1)/1 var(--f-body); color: var(--muted); background: none; border: 0;
+  border-bottom: 3px solid transparent; padding: 0.7rem 0.6rem; cursor: pointer; margin-bottom: -1px;
+}
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabpanel { display: grid; gap: 1rem; }
+.tabpanel > p { max-width: var(--prose); }
+pre.code {
+  margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1rem 1.1rem; overflow-x: auto; font-size: 0.9rem; line-height: 1.55; color: var(--ink);
+}
+pre.code .pt { color: var(--accent); font-weight: 600; }
+pre.code .cm { color: var(--muted); }
+
+.nest { display: grid; gap: 0.75rem; }
+.box { border: 1.5px solid var(--accent); border-radius: 12px; padding: 0.75rem 0.9rem 0.9rem; display: grid; gap: 0.6rem; background: color-mix(in srgb, var(--accent-soft) 35%, transparent); }
+.box .bh { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; align-items: center; font-family: var(--f-mono); font-size: 0.9rem; }
+.box .eff { font-family: var(--f-body); font-size: 0.8rem; color: var(--muted); }
+.box .eff b { font-family: var(--f-mono); color: var(--ink); font-size: 0.9rem; letter-spacing: 0.08em; }
+.box .txt { font-size: 0.9rem; color: var(--muted); }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+.rules { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.6rem; }
+.rules li::marker { color: var(--accent); }
+
+.recipes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
+.recipe { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.2rem; display: grid; gap: 0.6rem; grid-template-rows: auto auto 1fr auto; }
+.recipe h4 { margin: 0; font-family: var(--f-display); font-stretch: 112%; font-size: 1.05rem; }
+.recipe p { font-size: 0.92rem; color: var(--muted); }
+.recipe .btn { justify-self: start; }
+
+.combo { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 1.5rem 2rem; }
+.combo > * { min-width: 0; }
+.combo textarea { min-height: 9.5rem; resize: vertical; }
+.presets { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.verdict { display: grid; gap: 0.9rem; align-content: start; }
+.verdict .vh { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.verdict ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.4rem; }
+.verdict li.block::marker { color: var(--take); }
+.verdict li.note::marker { color: var(--cond); }
+
+.law { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; }
+.law > div { display: grid; gap: 0.5rem; align-content: start; border-top: 1px solid var(--line); padding-top: 1rem; }
+.law p { color: var(--ink); }
+
+.faq { display: grid; border-top: 1px solid var(--line); max-width: 860px; }
+.faq details { border-bottom: 1px solid var(--line); padding-block: 0.9rem; }
+.faq summary { cursor: pointer; font-weight: 600; list-style-position: outside; }
+.faq details p { margin-top: 0.6rem; max-width: var(--prose); }
+
+footer { padding-block: 4rem 3rem; }
+footer .wrap { border-top: 1px solid var(--line); padding-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; color: var(--muted); font-size: var(--step--1); }
+
+@media (max-width: 860px) {
+  .hero .wrap, .reader-top, .two, .combo, .law { grid-template-columns: minmax(0, 1fr); }
+  .states { grid-template-columns: minmax(0, 1fr); }
+  .right { grid-template-columns: minmax(0, 1fr) auto; }
+  .right .why { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tog, .btn { transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+  .pill-show .capsule { transition: transform 0.2s; }
+  .pill-show .capsule.bump { transform: scale(1.03); }
+  html { scroll-behavior: smooth; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <span class="label">Package leaflet · Information for authors and users</span>
+    <span class="label">Specification version 1</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Code pill</h1>
+      <p class="lede">A short tag that tells humans and machines what they may do with your text, code, image, music or speech.</p>
+      <p class="thesis">A pill grants everything you can legally grant.<br><strong>Each letter takes some freedom back.</strong></p>
+    </div>
+    <nav class="toc" aria-label="Contents">
+      <span class="label">What is in this leaflet</span>
+      <ol>
+        <li><a href="#what">What a code pill is and what it is used for</a></li>
+        <li><a href="#letters">What each letter takes back</a></li>
+        <li><a href="#write">How to write a pill</a></li>
+        <li><a href="#common">Common pills</a></li>
+        <li><a href="#combine">Taking it with other pills</a></li>
+        <li><a href="#law">Pills and the law</a></li>
+        <li><a href="#faq">Questions</a></li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- ============ Reader ============ -->
+<section id="reader" aria-labelledby="reader-title">
+  <div class="wrap panel reader">
+    <div class="reader-top">
+      <div class="pill-show">
+        <span class="label" id="reader-title">Read a pill</span>
+        <span class="capsule" id="cap" aria-live="polite"><span class="cap-l" id="cap-l">(1</span><span class="cap-r" id="cap-r">ACM]</span></span>
+        <p class="caption" id="cap-caption">Credit the author · Not for profit · No mining or AI training</p>
+      </div>
+      <div class="stack">
+        <div class="field">
+          <label class="label" for="pill-input">Type a pill, or pick letters below</label>
+          <div class="field-row">
+            <input type="text" id="pill-input" value="(1ACM]" spellcheck="false" autocomplete="off" autocapitalize="off">
+            <button class="btn" id="copy-btn" type="button">Copy</button>
+          </div>
+          <p class="err" id="pill-err" hidden></p>
+        </div>
+        <div class="toggles" id="toggles" role="group" aria-label="Pill letters"></div>
+      </div>
+    </div>
+
+    <div>
+      <span class="label">What you may do with the content</span>
+      <div class="rights" id="rights"></div>
+    </div>
+    <div class="stack">
+      <span class="label">Also remember</span>
+      <ul class="duties" id="duties"></ul>
+    </div>
+  </div>
+</section>
+
+<main>
+<!-- ============ 1 ============ -->
+<section class="sec" id="what">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">1.</span>
+      <h2>What a code pill is and what it is used for</h2>
+      <p>Licences are long, all different, and hard to follow for people and for software. A code pill fits the same intent in a few characters, can tag a whole file or a single sentence, and can be checked by a program.</p>
+    </div>
+
+    <div class="states">
+      <div class="state">
+        <div class="what">no pill</div>
+        <h3>The law decides</h3>
+        <p>This scheme doesn't apply. In almost every country, a work is protected as soon as it exists: all rights are reserved.</p>
+      </div>
+      <div class="state s2">
+        <div class="what"><span class="capsule sm"><span class="cap-l">(1</span><span class="cap-r">]</span></span></div>
+        <h3>An empty pill gives everything</h3>
+        <p>Every right the author can legally grant is granted. Moral rights the law keeps with the author, such as the right to integrity in France, stay with them.</p>
+      </div>
+      <div class="state s3">
+        <div class="what"><span class="capsule sm"><span class="cap-l">(1</span><span class="cap-r">AC]</span></span></div>
+        <h3>Each letter takes some freedom back</h3>
+        <p>Everything is granted except what the letters take back. If you don't respect a letter, the pill grants you nothing and the law alone applies.</p>
+      </div>
+    </div>
+
+    <div class="anatomy" role="img" aria-label="Anatomy of the pill (1ACM~photos]: opening bracket, version number, letters, scope name, closing bracket">
+      <div class="anat">
+        <div class="tok"><b>(</b><span>opens</span></div>
+        <div class="tok v"><b>1</b><span>version</span></div>
+        <div class="tok l"><b>ACM</b><span>letters, any order</span></div>
+        <div class="tok i"><b>~photos</b><span>optional scope name, links to PILL_TERMS.txt</span></div>
+        <div class="tok"><b>]</b><span></span></div>
+      </div>
+    </div>
+    <p class="prose" style="margin-top:1rem">The closing tag mirrors it: <code>[1ACM~photos)</code>. It's only needed when the protection stops before the end of the document, or when the document may be pasted inside another one.</p>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="sec" id="letters">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">2.</span>
+      <h2>What each letter takes back</h2>
+      <p>Eleven letters. Most add a condition or a limit. Two stop every use, and one only carries information.</p>
+    </div>
+
+    <div class="groups">
+      <div class="group">
+        <h3>Conditions</h3>
+        <p>You can still use the content, provided you do something in return.</p>
+        <div class="letters">
+          <article class="letter"><span class="big">A</span><h4>Attribution</h4>
+            <p class="takes"><b>Takes back:</b> using it without crediting the author.</p>
+            <p class="ex">Use the name from the <code>Author:</code> field. If no name is published anywhere, the author can't claim a missing credit.</p></article>
+          <article class="letter"><span class="big">S</span><h4>Share alike</h4>
+            <p class="takes"><b>Takes back:</b> distributing a work built on it under other terms.</p>
+            <p class="ex">Anything made from it carries exactly the same pill.</p></article>
+          <article class="letter"><span class="big">T</span><h4>Truthful quotation</h4>
+            <p class="takes"><b>Takes back:</b> excerpts that are uncredited, unmarked, or cut to change the meaning.</p>
+            <p class="ex">If the meaning needs the whole text, quote the whole text.</p></article>
+          <article class="letter"><span class="big">F</span><h4>Feedback</h4>
+            <p class="takes"><b>Takes back:</b> commercial use without a prior agreement with the author.</p>
+            <p class="ex">If it earns you money, it has value: agree with the author on how that value comes back to them. Suggested terms go in the <code>Feedback:</code> field.</p></article>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Limits</h3>
+        <p>Some uses are simply not granted.</p>
+        <div class="letters">
+          <article class="letter"><span class="big">C</span><h4>No commercial use</h4>
+            <p class="takes"><b>Takes back:</b> selling it, or using it in anything that makes money.</p>
+            <p class="ex">Wins over <code>F</code> when both are present.</p></article>
+          <article class="letter"><span class="big">R</span><h4>No modification</h4>
+            <p class="takes"><b>Takes back:</b> changing it.</p>
+            <p class="ex">Verbatim copies only. Converting a file to another format isn't a modification.</p></article>
+          <article class="letter"><span class="big">D</span><h4>Distinct works only</h4>
+            <p class="takes"><b>Takes back:</b> reusing it, or recognizable parts of it, in another work.</p>
+            <p class="ex">A song can be shared on its own, and can inspire a new song nobody could trace back to it. No sample, remix, soundtrack or advert.</p></article>
+          <article class="letter"><span class="big">M</span><h4>No machine use</h4>
+            <p class="takes"><b>Takes back:</b> data extraction, AI training, text and data mining, and any processing not meant for immediate human consumption.</p>
+            <p class="ex">Display, screen readers, backups, and compiling or running code stay allowed. In the EU, this is a text and data mining opt-out.</p></article>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Stops</h3>
+        <p>No use is granted. The difference is whether the author claims the content.</p>
+        <div class="letters">
+          <article class="letter stop"><span class="big">N</span><h4>No use, proof only</h4>
+            <p class="takes"><b>Takes back:</b> every use, except proving the content's authenticity, date or authorship.</p>
+            <p class="ex">The author claims it. Publish an invention to date it, without letting anyone copy or use it.</p></article>
+          <article class="letter stop"><span class="big">P</span><h4>Poison</h4>
+            <p class="takes"><b>Takes back:</b> every use, including attributing it to the author.</p>
+            <p class="ex">The author disowns it: noise, a decoy, generated text. Finding it anywhere else proves the pills were ignored.</p></article>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Information</h3>
+        <p>Takes nothing back.</p>
+        <div class="letters">
+          <article class="letter info"><span class="big">W</span><h4>Warranty</h4>
+            <p class="takes"><b>Takes back:</b> nothing.</p>
+            <p class="ex">Without <code>W</code>, no warranty is given. With it, the terms are in the <code>Warranty:</code> field of <code>PILL_TERMS.txt</code>.</p></article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="sec" id="write">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">3.</span>
+      <h2>How to write a pill</h2>
+      <p>Put it where people and programs will find it: in a comment, in the file's metadata, in its name, or say it aloud.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Where to put a pill">
+      <button class="tab" role="tab" id="tab-code" aria-controls="panel-code" aria-selected="true" type="button">Source code</button>
+      <button class="tab" role="tab" id="tab-image" aria-controls="panel-image" aria-selected="false" tabindex="-1" type="button">Image</button>
+      <button class="tab" role="tab" id="tab-web" aria-controls="panel-web" aria-selected="false" tabindex="-1" type="button">Web page</button>
+      <button class="tab" role="tab" id="tab-speech" aria-controls="panel-speech" aria-selected="false" tabindex="-1" type="button">Speech or video</button>
+      <button class="tab" role="tab" id="tab-terms" aria-controls="panel-terms" aria-selected="false" tabindex="-1" type="button">PILL_TERMS.txt</button>
+    </div>
+
+    <div class="tabpanel" role="tabpanel" id="panel-code" aria-labelledby="tab-code">
+      <p>The pill in the header covers the whole file. Nested pills change the rules for one part: a lowercase letter lifts a restriction, an uppercase letter adds one.</p>
+<pre class="code"><span class="cm">/* <span class="pt">(1ACM~engine]</span>
+ * Author: Jane Doe
+ * Contact: jane@example.org
+ */</span>
+#include "vector.h"
+
+float dot(vec3 a, vec3 b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
+
+<span class="cm">/* <span class="pt">(m]</span>  Machines may read this table.        effective: A C */</span>
+static const float sine_table[256] = { /* ... */ };
+<span class="cm">/* <span class="pt">[m)</span> */</span>
+
+<span class="cm">/* <span class="pt">(R]</span>  Copy these constants, don't change them. effective: A C M R */</span>
+#define GRAVITY 9.80665f
+<span class="cm">/* <span class="pt">[R)</span> */</span></pre>
+    </div>
+
+    <div class="tabpanel" role="tabpanel" id="panel-image" aria-labelledby="tab-image" hidden>
+      <p>Write the pill in the metadata, and in the file name if you want it visible everywhere the file goes.</p>
+<pre class="code">$ exiftool -Artist="Jane Doe" \
+           -UserComment="<span class="pt">(1ACM~photos]</span>" sunset.jpg
+
+$ mv sunset.jpg "sunset <span class="pt">(1ACM]</span>.jpg"</pre>
+    </div>
+
+    <div class="tabpanel" role="tabpanel" id="panel-web" aria-labelledby="tab-web" hidden>
+      <p>The page carries its author's pill. The quotation keeps the pill of the person quoted, with a closing tag so the rest of the page isn't affected. Inside the quote, the effective letters are <code>A T</code>.</p>
+<pre class="code">&lt;head&gt;
+  <span class="cm">&lt;!-- <span class="pt">(1A]</span> Author: Jane Doe --&gt;</span>
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;My review of Marc Dupont's essay...&lt;/p&gt;
+  &lt;blockquote&gt;
+    <span class="cm">&lt;!-- <span class="pt">(AT]</span> Author: Marc Dupont --&gt;</span>
+    "Every city deserves a library that stays open at night."
+    — Marc Dupont, &lt;cite&gt;Night Libraries&lt;/cite&gt;
+    <span class="cm">&lt;!-- <span class="pt">[AT)</span> --&gt;</span>
+  &lt;/blockquote&gt;
+&lt;/body&gt;</pre>
+    </div>
+
+    <div class="tabpanel" role="tabpanel" id="panel-speech" aria-labelledby="tab-speech" hidden>
+      <p>Say the pill when the protected part starts, and say when it ends if it ends before you do. In a video, you can instead show it on screen or on a badge for the whole time it applies.</p>
+<pre class="code"><span class="cm">[speaker]</span>  Before I start: <span class="pt">code pill one, A, T</span>.
+           ...
+           That's the end of the pill. Now, some questions from the room.</pre>
+    </div>
+
+    <div class="tabpanel" role="tabpanel" id="panel-terms" aria-labelledby="tab-terms" hidden>
+      <p>One file at the root of the repository or website. Records are separated by an empty line. <code>Scope:</code> links a record to the pills that carry the same <code>~name</code>. A record without <code>Scope:</code> applies to unnamed pills.</p>
+<pre class="code">Author: Jane Doe
+Contact: jane@example.org
+
+Scope: engine
+Author: Jane Doe
+Author: John Roe
+Contact: engine@example.org
+Feedback: 2% of the net revenue of any product shipping this engine,
+  or equivalent maintenance time. Please contact us before shipping.
+
+Scope: icons
+Author: Studio Example
+Warranty: The icons are guaranteed free of any third-party rights.
+  The author covers documented claims up to 1000 EUR.</pre>
+    </div>
+
+    <div class="two" style="margin-top:2.5rem">
+      <div class="stack">
+        <h3>Nesting</h3>
+        <p>A nested pill starts from its parent's letters, adds its uppercase letters and removes its lowercase ones. Only the author can add pills inside their own content.</p>
+        <ul class="rules">
+          <li>The outermost pill carries the version: <code>(1…]</code>. Nested pills can omit it.</li>
+          <li>A closing tag repeats its opening tag exactly and closes the innermost pill.</li>
+          <li>A pill covering a whole file needs no closing tag.</li>
+          <li>A tool that doesn't know the pill's version reads the whole document as <code>N</code>.</li>
+          <li>Letters the pill's version doesn't define are ignored. A closing tag that doesn't match is ignored too, so the open pill keeps applying.</li>
+        </ul>
+      </div>
+      <div class="nest" aria-label="Nested pills and their effective letters">
+        <div class="box">
+          <div class="bh"><span class="capsule sm"><span class="cap-l">(1</span><span class="cap-r">ACM]</span></span><span class="eff">effective <b>A C M</b></span></div>
+          <p class="txt">The whole file.</p>
+          <div class="box">
+            <div class="bh"><span>(m]</span><span class="eff">effective <b>A C</b></span></div>
+            <p class="txt">Machines may process this part.</p>
+            <div class="box">
+              <div class="bh"><span>(R]</span><span class="eff">effective <b>A C R</b></span></div>
+              <p class="txt">Machines may read it. Nobody may change it.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="sec" id="common">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">4.</span>
+      <h2>Common pills</h2>
+      <p>The usual wishes are the shortest to write. Open any of them in the reader.</p>
+    </div>
+    <div class="recipes" id="recipes"></div>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="sec" id="combine">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">5.</span>
+      <h2>Taking it with other pills</h2>
+      <p>When contents with different pills are mixed, in a document, a product or a training dataset, the result carries all their letters. Some pills can't be mixed at all.</p>
+    </div>
+
+    <div class="two" style="margin-bottom:2rem">
+      <ul class="rules">
+        <li><strong>Pills stay.</strong> Every copy, excerpt and derived work keeps the pill of what it came from.</li>
+        <li><strong>Letters add up.</strong> The combined result carries every letter of every pill.</li>
+        <li><strong>The most restrictive wins.</strong> <code>P</code> beats everything, then <code>N</code>. <code>C</code> beats <code>F</code>.</li>
+      </ul>
+      <ul class="rules">
+        <li><strong>Some mixes are forbidden.</strong> <code>N</code>, <code>P</code> and <code>D</code> content can't go into a mix. A share-alike pill only accepts pills whose letters it already has.</li>
+        <li><strong>Machines follow the same rules.</strong> Output generated from pilled content carries the combined pill, or is discarded if the pills can't be combined. Training data has to be sorted into groups of compatible pills.</li>
+      </ul>
+    </div>
+
+    <div class="panel combo">
+      <div class="stack">
+        <label class="label" for="combo-input">Pills to combine, one per line</label>
+        <textarea id="combo-input" spellcheck="false"></textarea>
+        <div class="presets" id="presets"></div>
+      </div>
+      <div class="verdict" id="verdict" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="sec" id="law">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">6.</span>
+      <h2>Pills and the law</h2>
+      <p>A pill is a grant from the author. It works on top of copyright and authors' rights law, never against it.</p>
+    </div>
+    <div class="law">
+      <div>
+        <h3>What a pill can't take away</h3>
+        <p>Rights the law gives to everyone, such as the right of quotation (fair use, fair dealing, <i>droit de citation</i>), don't come from the pill, so no letter can remove them.</p>
+      </div>
+      <div>
+        <h3>What a pill can't give away</h3>
+        <p>Where moral rights are inalienable, as in France, the author keeps them even under an empty pill. That's why the scheme never says "public domain": the term means different things in different countries.</p>
+      </div>
+      <div>
+        <h3>When a letter isn't respected</h3>
+        <p>The pill grants nothing to that user. Their use is then judged by the law alone, under which, by default, all rights are reserved.</p>
+      </div>
+      <div>
+        <h3>M and European law</h3>
+        <p>In the EU, rights holders can opt out of text and data mining in a machine-readable way (Directive 2019/790, article 4). <code>M</code> is such an opt-out, and the AI Act requires general-purpose AI providers to respect it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">7.</span>
+      <h2>Questions</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Why does a pill grant everything, instead of reserving everything?</summary>
+        <p>Because the law already reserves everything when there's no pill. A pill is only useful to give rights away, so the most common wishes stay short: <code>(1A]</code> for "credit me", <code>(1AS]</code> for "credit me and keep it open".</p>
+      </details>
+      <details>
+        <summary>Do I need a closing pill?</summary>
+        <p>Not for a whole document. You need one when the protection changes inside the document, or when the document may be included in another one, like a header file or a pasted paragraph.</p>
+      </details>
+      <details>
+        <summary>How do I lift a restriction for a small part of my work?</summary>
+        <p>Nest a pill with the lowercase letter, like <code>(m]</code> inside a <code>(1ACM]</code> file. It saves you from closing the pill and opening a new one.</p>
+      </details>
+      <details>
+        <summary>What's the difference between N and P?</summary>
+        <p>With <code>N</code>, the author claims the work but keeps it private: it can only serve to prove its existence, date or authorship. With <code>P</code>, the author disowns the content: it's noise to be ignored, and if it shows up anywhere else, that proves someone ignored the pill.</p>
+      </details>
+      <details>
+        <summary>Can a pill forbid me to quote a text?</summary>
+        <p>No. Your right to quote comes from the law, not from the pill. <code>T</code> only spells out what a faithful quotation is: credit the author and source, mark it as a quote, don't twist the meaning.</p>
+      </details>
+      <details>
+        <summary>What if I find a letter I don't know?</summary>
+        <p>Ignore it. The pill starts with its version number, so a letter added by a later version is read with that version's rules, and a letter no version defines means nothing.</p>
+      </details>
+      <details>
+        <summary>What if I find a version I don't know?</summary>
+        <p>Read the whole document as <code>N</code> until your tool knows that version. An outdated tool never gives away a freedom that a newer letter takes back.</p>
+      </details>
+      <details>
+        <summary>Why does a pill start with a number?</summary>
+        <p>A pill has to survive in a file name. A colon is forbidden in Windows file names, and <code>|</code> or <code>!</code> are special characters in POSIX shells. A leading digit works everywhere and keeps the pill short: <code>(1ACM]</code>, or <code>(1]</code> for the empty pill.</p>
+      </details>
+      <details>
+        <summary>Can I use a pill and another licence together?</summary>
+        <p>Yes. Each licence is a separate grant and the scheme doesn't merge them. Just avoid saying contradictory things.</p>
+      </details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Code pill · Specification version 1. Full text: <a href="README.md">README.md</a></span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const ORDER = 'ACDFMNPRSTW';
+  const SHORT = {
+    A: ['Attribution', 'Credit the author'],
+    C: ['No commercial', 'Not for profit'],
+    D: ['Distinct only', 'No recognizable reuse'],
+    F: ['Feedback', 'Agree before profit'],
+    M: ['No machines', 'No mining or AI training'],
+    N: ['No use', 'Proof only'],
+    P: ['Poison', 'Disowned: ignore it'],
+    R: ['No changes', 'Verbatim only'],
+    S: ['Share alike', 'Same pill on derived works'],
+    T: ['True quotes', 'Faithful excerpts'],
+    W: ['Warranty', 'Warranty terms apply']
+  };
+  const ROWS = [
+    { label: 'Read and keep it', base: 'Read, store, display, print, back up.', rules: {} },
+    { label: 'Share copies', base: 'Give away or publish verbatim copies.', rules: { A: ['if', 'Credit the author.'] } },
+    { label: 'Quote excerpts', base: 'Reuse parts in your own text, video or talk.', rules: {
+      A: ['if', 'Credit the author.'],
+      T: ['if', 'Name the author and source, mark it as a quote, keep the meaning.'],
+      D: ['no', 'No recognizable part may go in another work. The legal right of quotation still applies.'] } },
+    { label: 'Modify or remix it', base: 'Translate, edit, adapt, fork.', rules: {
+      A: ['if', 'Credit the author.'],
+      S: ['if', 'Distribute the result under the same pill.'],
+      D: ['if', 'Only if the result can’t be recognized as the original.'],
+      R: ['no', 'Only verbatim copies are allowed.'] } },
+    { label: 'Put it in a larger work', base: 'A product, a compilation, a soundtrack, a dataset.', rules: {
+      A: ['if', 'Credit the author.'],
+      S: ['if', 'The larger work carries the same pill.'],
+      R: ['if', 'Keep it unchanged.'],
+      D: ['no', 'It can only be shared on its own.'] } },
+    { label: 'Use it commercially', base: 'Sell it, or use it in a for-profit activity.', rules: {
+      F: ['if', 'Only after an agreement with the author on how the value is returned.'],
+      C: ['no', 'No commercial use.'] } },
+    { label: 'Process it by machine', base: 'Text and data mining, AI training, data extraction.', rules: {
+      M: ['no', 'Machines may only display it, read it aloud, store it, send it, or compile and run code.'] } }
+  ];
+  const RECIPES = [
+    { pill: '(1]', title: 'Do anything', text: 'A snippet or a sketch you don’t care about. Everything you can legally give is given.' },
+    { pill: '(1A]', title: 'Credit me', text: 'A library anyone can use, change and sell, as long as your name stays on it.' },
+    { pill: '(1AS]', title: 'Keep it open', text: 'Anything built from your work must be shared under the same pill.' },
+    { pill: '(1ACM]', title: 'Hobby photographer', text: 'Share my photos with credit, but not for profit and not to train AI.' },
+    { pill: '(1AF]', title: 'Pay it back', text: 'Free for everyone, but a company that profits from it negotiates a return with you first.' },
+    { pill: '(1AT]', title: 'Op-ed', text: 'Quote me as much as you like, as long as the quote says what I said.' },
+    { pill: '(1ADR]', title: 'Finished track', text: 'Share the song as it is, with credit. No remix, no sample, no soundtrack.' },
+    { pill: '(1N]', title: 'Invention disclosure', text: 'Publish to prove the date and authorship of an idea, without letting anyone use it.' },
+    { pill: '(1P]', title: 'Canary', text: 'Decoy text hidden in a site. If it shows up in a dataset or a model’s output, the scraper ignored the pills.' }
+  ];
+  const PRESETS = [
+    { name: 'Compatible', text: '(1A]\n(1AC]\n(1AT]' },
+    { name: 'Share-alike clash', text: '(1AS]\n(1ACM]' },
+    { name: 'Contains poison', text: '(1A]\n(1P]' }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  const sortLetters = (set) => [...ORDER].filter((c) => set.has(c)).join('');
+
+  function parse(text) {
+    const m = text.trim().match(/^[(\[]?\s*(\d+)?\s*([A-Za-z]*)\s*(?:~([\w.\-]+))?\s*[\])]?$/);
+    if (!m) return null;
+    const up = new Set(), low = new Set(), unknown = new Set();
+    for (const ch of m[2]) {
+      const U = ch.toUpperCase();
+      if (ch === U) { (ORDER.includes(ch) ? up : unknown).add(ch); }
+      else if (ORDER.includes(U) && U !== 'N' && U !== 'P') low.add(ch);
+      else unknown.add(ch);
+    }
+    return { ver: m[1] || null, up, low, unknown, id: m[3] || '' };
+  }
+  function effective(p) {
+    if (p.ver && p.ver !== '1') return new Set(['N']);
+    return new Set(p.up);
+  }
+  function pillString(p) {
+    return '(' + (p.ver || '1') + sortLetters(p.up) + (p.id ? '~' + p.id : '') + ']';
+  }
+
+  function decode(E) {
+    if (E.has('P')) return ROWS.map((r) => ({ r, status: 'no', why: [['P', 'Disowned content: treat it as noise.']] }));
+    if (E.has('N')) return ROWS.map((r, i) => i === 0
+      ? { r, status: 'if', why: [['N', 'Only to prove its authenticity, date or authorship.']] }
+      : { r, status: 'no', why: [['N', 'Proof only: no other use is granted.']] });
+    const restricting = [...E].some((c) => c !== 'W');
+    return ROWS.map((r) => {
+      const why = [];
+      let status = 'yes';
+      for (const c of ORDER) {
+        if (!E.has(c) || !r.rules[c]) continue;
+        const [s, t] = r.rules[c];
+        if (s === 'no') { status = 'no'; why.length = 0; why.push([c, t]); break; }
+        status = 'if'; why.push([c, t]);
+      }
+      if (status !== 'no' && r === ROWS[6] && restricting) { status = 'if'; why.push(['', 'Anything generated from it carries this pill.']); }
+      if (status === 'yes') why.push(['', 'Granted.']);
+      return { r, status, why };
+    });
+  }
+
+  function duties(p, E) {
+    const out = [];
+    if (E.has('P')) out.push('Never attribute this content to its author, and don’t spread it.');
+    else out.push('Keep the pill on every copy, excerpt and derived work.');
+    if (!E.size) out.push('Every right the author can legally grant is granted. Moral rights the law keeps with the author stay with them.');
+    if (E.has('A') && !E.has('P') && !E.has('N')) out.push('Credit the author, using the name in the Author: field when there is one.');
+    if (E.has('F') && !E.has('C') && !E.has('P') && !E.has('N')) out.push('Contact the author before any commercial use. Their expectations may be in the Feedback: field of PILL_TERMS.txt.');
+    if (E.has('F') && E.has('C')) out.push('C wins over F: no commercial use at all.');
+    out.push(E.has('W') ? 'Specific warranty terms apply: see the Warranty: field of PILL_TERMS.txt.' : 'No warranty is given.');
+    if (p.unknown.size) out.push('Letter ' + [...p.unknown].join(', ') + ' isn\u2019t defined by version 1, so it\u2019s ignored.');
+    if (p.ver && p.ver !== '1') out.push('This page only knows version 1. A tool that doesn\u2019t know a pill\u2019s version reads the whole document as N.');
+    if (p.low.size) out.push('Lowercase letters (' + [...p.low].join(', ') + ') only work in a nested pill, where they lift the parent’s letter. Ignored here.');
+    if (!p.ver) out.push('Add the version, (1…], when this is the outermost pill of a document.');
+    if (p.id) out.push('Look for the record "Scope: ' + p.id + '" in PILL_TERMS.txt for names and terms.');
+    return out;
+  }
+
+  // ---------- Reader ----------
+  const input = $('pill-input'), err = $('pill-err'), toggles = $('toggles');
+  let state = parse(input.value);
+  const togBtns = {};
+  for (const c of ORDER) {
+    const b = el('button', 'tog');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', 'false');
+    b.append(el('span', 'k', c), el('span', 'n', SHORT[c][0]));
+    b.title = SHORT[c][1];
+    b.addEventListener('click', () => {
+      const up = new Set(state.up);
+      up.has(c) ? up.delete(c) : up.add(c);
+      state = { ver: state.ver || '1', up, low: new Set(), unknown: new Set(), id: state.id };
+      input.value = pillString(state);
+      render();
+    });
+    togBtns[c] = b;
+    toggles.append(b);
+  }
+
+  function render() {
+    const p = state, E = effective(p);
+    for (const c of ORDER) togBtns[c].setAttribute('aria-pressed', p.up.has(c) ? 'true' : 'false');
+    const letters = sortLetters(p.up) + [...p.unknown].join('') + [...p.low].join('');
+    $('cap-l').textContent = '(' + (p.ver || '');
+    $('cap-r').textContent = letters + (p.id ? '~' + p.id : '') + ']';
+    const cap = $('cap');
+    cap.classList.remove('bump'); void cap.offsetWidth; cap.classList.add('bump');
+    const parts = [...ORDER].filter((c) => E.has(c)).map((c) => SHORT[c][1]);
+    $('cap-caption').textContent = parts.length ? parts.join(' · ') : 'Do what you want with it';
+
+    const rights = $('rights');
+    rights.replaceChildren();
+    const words = { yes: 'Allowed', if: 'Conditions', no: 'Not granted' };
+    for (const row of decode(E)) {
+      const d = el('div', 'right');
+      const what = el('div', 'what', row.r.label);
+      what.append(el('small', null, row.r.base));
+      const why = el('div', 'why');
+      row.why.forEach(([c, t], i) => {
+        const line = el('div');
+        if (c) line.append(el('span', 'by', c));
+        line.append(document.createTextNode(t));
+        why.append(line);
+      });
+      d.append(what, el('span', 'chip ' + row.status, words[row.status]), why);
+      rights.append(d);
+    }
+    const ul = $('duties');
+    ul.replaceChildren(...duties(p, E).map((t) => el('li', null, t)));
+  }
+
+  input.addEventListener('input', () => {
+    const p = parse(input.value);
+    if (!p) { err.textContent = 'This isn’t a pill. Write it like (1ACM] or just the letters, like ACM.'; err.hidden = false; return; }
+    err.hidden = true;
+    state = p;
+    render();
+  });
+
+  $('copy-btn').addEventListener('click', () => {
+    const btn = $('copy-btn');
+    const done = () => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy'; }, 1400); };
+    try {
+      navigator.clipboard.writeText(input.value).then(done, () => { input.select(); });
+    } catch (e) { input.select(); }
+  });
+
+  function loadPill(text) {
+    input.value = text;
+    input.dispatchEvent(new Event('input'));
+    $('reader').scrollIntoView({ block: 'start' });
+    input.focus({ preventScroll: true });
+  }
+
+  // ---------- Recipes ----------
+  const rec = $('recipes');
+  for (const r of RECIPES) {
+    const card = el('article', 'recipe');
+    const p = parse(r.pill);
+    const cap = el('span', 'capsule sm');
+    cap.append(el('span', 'cap-l', '(1'), el('span', 'cap-r', sortLetters(p.up) + ']'));
+    const b = el('button', 'btn', 'Open in the reader');
+    b.type = 'button';
+    b.addEventListener('click', () => loadPill(r.pill));
+    card.append(cap, el('h4', null, r.title), el('p', null, r.text), b);
+    rec.append(card);
+  }
+
+  // ---------- Combination ----------
+  const combo = $('combo-input');
+  function combine() {
+    const lines = combo.value.split('\n').map((s) => s.trim()).filter(Boolean);
+    const v = $('verdict');
+    v.replaceChildren();
+    const bad = lines.filter((l) => !parse(l));
+    if (!lines.length) { v.append(el('p', 'caption', 'Enter at least one pill.')); return; }
+    if (bad.length) { v.append(el('p', 'err', 'Not a pill: ' + bad.join(', '))); return; }
+    const items = lines.map((l) => { const p = parse(l); return { s: l, p, E: effective(p) }; });
+    const blocks = [], notes = [];
+    for (const it of items) {
+      if (it.E.has('P')) blocks.push(it.s + ' is poison: it can’t be used at all.');
+      else if (it.E.has('N')) blocks.push(it.s + ' is proof only: it can’t go into anything.');
+      else if (it.E.has('D')) blocks.push(it.s + ' has D: it can’t go, recognizably, into another work.');
+    }
+    const sItems = items.filter((it) => it.E.has('S'));
+    if (sItems.length) {
+      const ref = sItems[0];
+      const refL = sortLetters(ref.E);
+      for (const it of sItems.slice(1)) {
+        if (sortLetters(it.E) !== refL) blocks.push(ref.s + ' and ' + it.s + ' are both share-alike with different letters: each demands its own pill on the result.');
+      }
+      for (const it of items.filter((x) => !x.E.has('S'))) {
+        const extra = [...ORDER].filter((c) => it.E.has(c) && !ref.E.has(c));
+        if (extra.length) blocks.push(it.s + ' adds ' + extra.join(', ') + ', but ' + ref.s + ' requires the result to carry exactly its own pill.');
+      }
+    }
+    const union = new Set();
+    items.forEach((it) => it.E.forEach((c) => union.add(c)));
+    if (!blocks.length) {
+      if (union.has('M')) notes.push('Contains M: a person may combine these, a machine may not. Keep it out of AI training sets.');
+      if (union.has('C') && union.has('F')) notes.push('C wins over F: the result can’t be used commercially.');
+      if (union.has('A')) notes.push('Credit every author whose pill has A.');
+    }
+    const head = el('div', 'vh');
+    head.append(el('span', 'chip ' + (blocks.length ? 'no' : 'yes'), blocks.length ? 'Can’t be combined' : 'Compatible'));
+    if (!blocks.length) {
+      const cap = el('span', 'capsule sm');
+      cap.append(el('span', 'cap-l', '(1'), el('span', 'cap-r', sortLetters(union) + ']'));
+      head.append(el('span', null, 'The result carries'), cap);
+    }
+    v.append(head);
+    if (blocks.length || notes.length) {
+      const ul = el('ul');
+      blocks.forEach((t) => ul.append(el('li', 'block', t)));
+      notes.forEach((t) => ul.append(el('li', 'note', t)));
+      v.append(ul);
+    }
+  }
+  const presets = $('presets');
+  for (const pr of PRESETS) {
+    const b = el('button', 'btn', pr.name);
+    b.type = 'button';
+    b.addEventListener('click', () => { combo.value = pr.text; combine(); });
+    presets.append(b);
+  }
+  combo.value = PRESETS[1].text;
+  combo.addEventListener('input', combine);
+  combine();
+
+  // ---------- Tabs ----------
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  function select(tab) {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      $(t.getAttribute('aria-controls')).hidden = !on;
+    }
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => select(t));
+    t.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      select(n); n.focus();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
