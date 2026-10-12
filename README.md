@@ -1,3 +1,8 @@
+---
+layout: default
+title: Code pill - version 1
+---
+
 # Code pill
 
 A licensing scheme for humans and machines — specification version 1
