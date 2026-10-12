@@ -1,7 +1,3 @@
----
-layout: default
-title: Code pill - version 1
----
 
 # Code pill
 
