@@ -126,7 +126,7 @@ p { margin: 0; }
 .pill-show .caption { color: var(--muted); }
 .field { display: grid; gap: 0.35rem; }
 .field-row { display: flex; gap: 0.5rem; }
-input[type="text"], textarea {
+input[type="text"], input[type="email"], textarea {
   font: 500 1.05rem/1.4 var(--f-mono); color: var(--ink); background: var(--bg);
   border: 1.5px solid var(--line); border-radius: 8px; padding: 0.6rem 0.75rem; width: 100%; min-width: 0;
 }
@@ -682,11 +682,61 @@ Warranty: The icons are guaranteed free of any third-party rights.
     </div>
   </div>
 </section>
+<section class="sec">
+  <div class="wrap">
+    <h3>Current status - Draft, request for comments</h3>
+    <br/>
+    <p>If you have any remark or a better idea for improvement, feel free to submit your thought below</p>
+    <br/>
+    <form action="https://api.web3forms.com/submit" method="POST" id="form">
+      <fieldset>
+        <legend>Feedback</legend>
+        <input type="hidden" name="access_key" value="049130b1-e72e-4ebe-bde0-b4217f08f7d2" />
+        <input type="checkbox" name="botcheck" class="hidden" id="" style="display: none;" />
+        <div>
+          <label for="name">Full Name</label><br />
+          <input
+            type="text"
+            name="name"
+            id="name"
+            placeholder="John Doe"
+            required
+          />
+          <br /><br />
+        </div>
+        <div>
+          <label for="email">Email Address</label><br />
+          <input
+            type="email"
+            name="email"
+            id="email"
+            placeholder="you@company.com"
+            required
+          /><br /><br />
+        </div>
+        <div>
+          <label for="message">Your Message</label>
+          <br />
+          <textarea
+            rows="5"
+            name="message"
+            id="message"
+            placeholder="Your Message"
+            required
+          ></textarea
+          ><br /><br />
+        </div>
+    
+        <button type="submit">Send Message</button>
+      </fieldset>
+    </form>
+  </div>
+</section>
 </main>
 
 <footer>
   <div class="wrap">
-    <span>Code pill · Specification version 1. Full text: <a href="/specs">specs.md</a></span>
+    <span>Code pill - Specification version 1. Full text: <a href="./specs">specs.md</a></span>
   </div>
 </footer>
 
