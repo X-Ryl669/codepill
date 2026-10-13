@@ -21,7 +21,7 @@
   --give-soft: #DFF3E9;
   --cond: #8F5A00;
   --cond-soft: #FBEFD6;
-  --code-bg: #ECEEF4;
+  --code-bg: #CCCED4;
 
   --f-display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -42,15 +42,16 @@
     --bg: #0D1020; --surface: #151A2E; --ink: #E7E9F3; --muted: #9AA1BC; --line: #283050;
     --accent: #7D92FF; --accent-ink: #0D1020; --accent-soft: #1C2452;
     --take: #FF7491; --take-soft: #3A1623; --give: #46CF96; --give-soft: #0F2F21;
-    --cond: #F2B84B; --cond-soft: #33270C; --code-bg: #10142A;
+    --cond: #F2B84B; --cond-soft: #33270C; --code-bg: #20343A;
     color-scheme: dark;
   }
+  section.hero img { filter: invert(100%); }
 }
 :root[data-theme="dark"] {
   --bg: #0D1020; --surface: #151A2E; --ink: #E7E9F3; --muted: #9AA1BC; --line: #283050;
   --accent: #7D92FF; --accent-ink: #0D1020; --accent-soft: #1C2452;
   --take: #FF7491; --take-soft: #3A1623; --give: #46CF96; --give-soft: #0F2F21;
-  --cond: #F2B84B; --cond-soft: #33270C; --code-bg: #10142A;
+  --cond: #F2B84B; --cond-soft: #33270C; --code-bg: #20343A;
   color-scheme: dark;
 }
 
@@ -73,7 +74,9 @@ h1, h2, h3 { font-family: var(--f-display); font-stretch: 118%; line-height: 1.1
 h2 { font-size: var(--step-3); font-weight: 750; }
 h3 { font-size: var(--step-1); font-weight: 700; }
 p { margin: 0; }
+section { margin-top: 5em; }
 
+.hero h1 { display: flex; align-items: center; justify-content: center; }
 .wrap { max-width: var(--wide); margin-inline: auto; }
 .prose { max-width: var(--prose); }
 .stack { display: grid; gap: 1rem; }
@@ -101,19 +104,30 @@ p { margin: 0; }
 .masthead { padding-block: 1.25rem 0; }
 .masthead .wrap { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 0.75rem; }
 .hero { padding-block: clamp(2rem, 6vw, 4rem) 2rem; }
-.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+.hero .wrap { text-align: center;  }
 .hero h1 { font-size: var(--step-4); font-weight: 800; font-stretch: 125%; letter-spacing: -0.01em; }
-.hero .lede { font-size: var(--step-1); line-height: 1.5; margin-top: 1rem; max-width: 34ch; }
+.hero .lede { font-size: var(--step-1); line-height: 1.5; margin-top: 1rem; }
 .hero .thesis {
   margin-top: 1.5rem; padding: 1rem 1.25rem; border-left: 4px solid var(--accent);
   background: var(--surface); border-radius: 0 var(--radius) var(--radius) 0;
-  font-size: var(--step-1); font-weight: 500; max-width: 40ch;
+  font-size: var(--step-1); font-weight: 500;
 }
 .hero .thesis strong { color: var(--take); font-weight: 600; }
-.toc { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1.25rem 1.25rem 1rem; }
+.toc { max-width: 19vw; position: fixed; top: 5em; }
+@media only screen and (max-width: 1640px) {
+  .toc {
+    max-width: var(--wide);
+    position: inherit;
+    top: auto;
+    text-align: center;
+    display: none;  
+  }
+}
+
 .toc ol { margin: 0.75rem 0 0; padding-left: 1.4rem; display: grid; gap: 0.35rem; }
 .toc li::marker { font-family: var(--f-display); font-weight: 700; color: var(--accent); }
 .toc a { color: var(--ink); text-decoration: none; }
+.toc a.active { color: var(--accent); text-decoration: none; }
 .toc a:hover { color: var(--accent); text-decoration: underline; }
 
 /* ---------- Reader (decoder) ---------- */
@@ -139,7 +153,7 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); outline:
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn.primary:hover { filter: brightness(1.08); color: var(--accent-ink); }
-
+form button { padding: 1em; width: 100%; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line); cursor: pointer; }
 .toggles { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 0.5rem; }
 .tog {
   display: grid; gap: 0.15rem; justify-items: start; text-align: left;
@@ -169,7 +183,7 @@ input[type="text"]:focus, textarea:focus { border-color: var(--accent); outline:
 section.sec { padding-block: clamp(2.5rem, 7vw, 4.5rem) 0; }
 .sec-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 1rem; align-items: baseline; margin-bottom: 1.5rem; }
 .sec-num { font-family: var(--f-display); font-stretch: 125%; font-weight: 800; font-size: var(--step-3); color: var(--accent); line-height: 1.1; }
-.sec-head p { grid-column: 2; color: var(--muted); margin-top: 0.5rem; max-width: var(--prose); }
+.sec-head p { grid-column: 2; color: var(--muted); margin-top: 0.5rem; }
 
 .states { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
 .state { border-top: 3px solid var(--line); padding-top: 1rem; display: grid; gap: 0.6rem; align-content: start; }
@@ -178,13 +192,16 @@ section.sec { padding-block: clamp(2.5rem, 7vw, 4.5rem) 0; }
 .state .what { font-family: var(--f-mono); font-weight: 600; min-height: 2rem; display: flex; align-items: center; }
 .state p { color: var(--ink); }
 
-.anatomy { margin-top: 2rem; overflow-x: auto; padding-bottom: 0.5rem; }
+.anatomy { margin-top: 2rem; overflow-x: auto; padding-bottom: 0.5rem; text-align:center; }
 .anat { display: inline-grid; grid-auto-flow: column; gap: 2px; font-family: var(--f-mono); }
 .anat .tok { display: grid; gap: 0.5rem; justify-items: center; }
 .anat .tok b { font-size: clamp(1.4rem, 5vw, 2.4rem); font-weight: 600; padding: 0.25rem 0.4rem; border-bottom: 3px solid var(--line); }
 .anat .tok.v b { border-color: var(--accent); }
 .anat .tok.l b { border-color: var(--take); }
 .anat .tok.i b { border-color: var(--give); }
+.anat .tok.i span { color: var(--give); }
+.anat .tok.v span { color: var(--accent); }
+.anat .tok.l span { color: var(--take); }
 .anat .tok span { font-family: var(--f-body); font-size: 0.78rem; color: var(--muted); text-align: center; max-width: 9rem; line-height: 1.3; }
 
 .groups { display: grid; gap: 2rem; }
@@ -277,25 +294,29 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 1.25rem; display:
   </div>
 </header>
 
+<nav class="toc" aria-label="Contents">
+  <span class="label">Table of content</span>
+  <ol>
+    <li><a href="#reader">Code pill reader</a></li>
+    <li><a href="#what">What a code pill is</a></li>
+    <li><a href="#letters">What each letter takes back</a></li>
+    <li><a href="#write">How to write a pill</a></li>
+    <li><a href="#common">Common pills</a></li>
+    <li><a href="#combine">Taking it with other pills</a></li>
+    <li><a href="#law">Pills and the law</a></li>
+    <li><a href="#faq">Questions</a></li>
+  </ol>
+</nav>
+
+
 <section class="hero">
   <div class="wrap">
     <div>
-      <h1>Code pill</h1>
+      <h1><img src="pill.svg" style="margin-bottom: 0.5em; margin-right: 0.2em;">
+      Code pill</h1>
       <p class="lede">A short tag that tells humans and machines what they may do with your text, code, image, music or speech.</p>
       <p class="thesis">A pill grants everything you can legally grant.<br><strong>Each letter takes some freedom back.</strong></p>
     </div>
-    <nav class="toc" aria-label="Contents">
-      <span class="label">What is in this leaflet</span>
-      <ol>
-        <li><a href="#what">What a code pill is and what it is used for</a></li>
-        <li><a href="#letters">What each letter takes back</a></li>
-        <li><a href="#write">How to write a pill</a></li>
-        <li><a href="#common">Common pills</a></li>
-        <li><a href="#combine">Taking it with other pills</a></li>
-        <li><a href="#law">Pills and the law</a></li>
-        <li><a href="#faq">Questions</a></li>
-      </ol>
-    </nav>
   </div>
 </section>
 
@@ -362,14 +383,15 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 1.25rem; display:
 
     <div class="anatomy" role="img" aria-label="Anatomy of the pill (1ACM~photos]: opening bracket, version number, letters, scope name, closing bracket">
       <div class="anat">
-        <div class="tok"><b>(</b><span>opens</span></div>
+        <div class="tok"><b>(</b><span>open</span></div>
         <div class="tok v"><b>1</b><span>version</span></div>
-        <div class="tok l"><b>ACM</b><span>letters, any order</span></div>
-        <div class="tok i"><b>~photos</b><span>optional scope name, links to PILL_TERMS.txt</span></div>
-        <div class="tok"><b>]</b><span></span></div>
+        <div class="tok l"><b>ACM</b><span>letters in any order</span></div>
+        <div class="tok i"><b>~photos</b><span>optional scope name</span></div>
+        <div class="tok"><b>]</b><span>end</span></div>
       </div>
     </div>
-    <p class="prose" style="margin-top:1rem">The closing tag mirrors it: <code>[1ACM~photos)</code>. It's only needed when the protection stops before the end of the document, or when the document may be pasted inside another one.</p>
+    <p style="margin-top:1rem">The closing tag mirrors it: <code>[1ACM~photos)</code>. It's only needed when the protection stops before the end of the document, or when the document may be pasted inside another one. The 
+    optional scope name is only required if you have different terms (described in a companion file named <code>PILL_TERMS.txt</code>) for different sections in the document.</p> 
   </div>
 </section>
 
@@ -379,13 +401,13 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 1.25rem; display:
     <div class="sec-head">
       <span class="sec-num">2.</span>
       <h2>What each letter takes back</h2>
-      <p>Eleven letters. Most add a condition or a limit. Two stop every use, and one only carries information.</p>
+      <p>Eleven letters. Most add a condition or a limit. Two stop every use.</p>
     </div>
 
     <div class="groups">
       <div class="group">
         <h3>Conditions</h3>
-        <p>You can still use the content, provided you do something in return.</p>
+        <p>You can still use the content provided you do something in return.</p>
         <div class="letters">
           <article class="letter"><span class="big">A</span><h4>Attribution</h4>
             <p class="takes"><b>Takes back:</b> using it without crediting the author.</p>
@@ -453,7 +475,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 1.25rem; display:
     <div class="sec-head">
       <span class="sec-num">3.</span>
       <h2>How to write a pill</h2>
-      <p>Put it where people and programs will find it: in a comment, in the file's metadata, in its name, or say it aloud.</p>
+      <p>Put it where people and programs will find it, either in a comment, in the file's metadata, in its name, or say it aloud.</p>
     </div>
 
     <div class="tabs" role="tablist" aria-label="Where to put a pill">
@@ -465,7 +487,7 @@ footer .wrap { border-top: 1px solid var(--line); padding-top: 1.25rem; display:
     </div>
 
     <div class="tabpanel" role="tabpanel" id="panel-code" aria-labelledby="tab-code">
-      <p>The pill in the header covers the whole file. Nested pills change the rules for one part: a lowercase letter lifts a restriction, an uppercase letter adds one.</p>
+      <p>The pill in the header covers the whole file. Nested pills amends the rules: a lowercase letter lifts a restriction, an uppercase letter adds one.</p>
 <pre class="code"><span class="cm">/* <span class="pt">(1ACM~engine]</span>
  * Author: Jane Doe
  * Contact: jane@example.org
@@ -590,14 +612,14 @@ Warranty: The icons are guaranteed free of any third-party rights.
         <li><strong>The most restrictive wins.</strong> <code>P</code> beats everything, then <code>N</code>. <code>C</code> beats <code>F</code>.</li>
       </ul>
       <ul class="rules">
-        <li><strong>Some mixes are forbidden.</strong> <code>N</code>, <code>P</code> and <code>D</code> content can't go into a mix. A share-alike pill only accepts pills whose letters it already has.</li>
-        <li><strong>Machines follow the same rules.</strong> Output generated from pilled content carries the combined pill, or is discarded if the pills can't be combined. Training data has to be sorted into groups of compatible pills.</li>
+        <li><strong>Some mixes are forbidden.</strong> <code>N</code>, <code>P</code> and <code>D</code> content can't go into a mix. As an example, a share-alike pill only accepts pills whose letters it already has.</li>
+        <li><strong>Machines follow the same rules.</strong> Output generated from pilled content carries the combined pill or is discarded if the pills can't be combined. Training data has to be sorted into groups of compatible pills.</li>
       </ul>
     </div>
 
     <div class="panel combo">
       <div class="stack">
-        <label class="label" for="combo-input">Pills to combine, one per line</label>
+        <label class="label" for="combo-input">Pills to combine (one per line)</label>
         <textarea id="combo-input" spellcheck="false"></textarea>
         <div class="presets" id="presets"></div>
       </div>
@@ -612,12 +634,12 @@ Warranty: The icons are guaranteed free of any third-party rights.
     <div class="sec-head">
       <span class="sec-num">6.</span>
       <h2>Pills and the law</h2>
-      <p>A pill is a grant from the author. It works on top of copyright and authors' rights law, never against it.</p>
+      <p>A pill is a grant from the author. It works on top of copyright and authors' rights law (never against it).</p>
     </div>
     <div class="law">
       <div>
         <h3>What a pill can't take away</h3>
-        <p>Rights the law gives to everyone, such as the right of quotation (fair use, fair dealing, <i>droit de citation</i>), don't come from the pill, so no letter can remove them.</p>
+        <p>Rights the law gives to everyone, such as the right of quotation (fair use, fair dealing, <i>droit de citation</i>), don't come from the pill so no letter can remove them.</p>
       </div>
       <div>
         <h3>What a pill can't give away</h3>
@@ -665,7 +687,7 @@ Warranty: The icons are guaranteed free of any third-party rights.
       </details>
       <details>
         <summary>What if I find a letter I don't know?</summary>
-        <p>Ignore it. The pill starts with its version number, so a letter added by a later version is read with that version's rules, and a letter no version defines means nothing.</p>
+        <p>Ignore it. The pill starts with its version number, so a letter added by a later version is read with that version's rules. A letter not defined in a version means nothing.</p>
       </details>
       <details>
         <summary>What if I find a version I don't know?</summary>
@@ -684,7 +706,7 @@ Warranty: The icons are guaranteed free of any third-party rights.
 </section>
 <section class="sec">
   <div class="wrap">
-    <h3>Current status - Draft, request for comments</h3>
+    <h3>Current status : <code>Draft</code>, request for comments</h3>
     <br/>
     <p>If you have any remark or a better idea for improvement, feel free to submit your thought below</p>
     <br/>
@@ -1032,6 +1054,32 @@ Warranty: The icons are guaranteed free of any third-party rights.
       select(n); n.focus();
     });
   });
+  
+  // ---------- TOC ----------
+  const sections = document.querySelectorAll("section[id]");
+
+  // Add an event listener listening for scroll
+  window.addEventListener("scroll", navHighlighter);
+
+  function navHighlighter() {
+    let scrollY = window.pageYOffset;
+
+    document.querySelectorAll("nav a").forEach(e => e.classList.remove("active"));
+    // Now we loop through sections to get height, top and ID values for each
+    sections.forEach(current => {
+      const sectionHeight = current.offsetHeight;
+      const sectionTop = current.offsetTop - 50;
+      sectionId = current.getAttribute("id");
+    
+      if (
+        scrollY > sectionTop &&
+        scrollY <= sectionTop + sectionHeight
+      ){
+        let el = document.querySelector(`nav a[href="#${sectionId}"]`);
+        if (el) el.classList.add("active");
+      } 
+    });
+  }
 
   render();
 })();
