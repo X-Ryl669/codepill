@@ -251,15 +251,31 @@ pre.code .cm { color: var(--muted); }
 .recipe p { font-size: 0.92rem; color: var(--muted); }
 .recipe .btn { justify-self: start; }
 
-.combo { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 1.5rem 2rem; }
-.combo > * { min-width: 0; }
-.combo textarea { min-height: 9.5rem; resize: vertical; }
-.presets { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.verdict { display: grid; gap: 0.9rem; align-content: start; }
-.verdict .vh { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
-.verdict ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.4rem; }
-.verdict li.block::marker { color: var(--take); }
-.verdict li.note::marker { color: var(--cond); }
+.mix { display: grid; gap: 1.5rem; }
+.mix-graphs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 2rem; }
+.mix figure { margin: 0; display: grid; gap: 1rem; align-content: start; }
+.mix figure > svg { width: 100%; max-width: 440px; height: auto; justify-self: center; overflow: visible; }
+.mix .edge { stroke: var(--take); stroke-width: 1.5; fill: none; }
+.mix .edge.ok { stroke: var(--give); }
+.mix .edge.maybe { stroke-dasharray: 5 4; }
+.mix .cross-bg { fill: var(--surface); }
+.mix .cross { stroke: var(--take); stroke-width: 2; stroke-linecap: round; }
+.mix .link { transition: opacity 0.15s; }
+.mix .node { cursor: pointer; }
+.mix .node:focus { outline: none; }
+.mix .node circle { fill: var(--accent-soft); stroke: var(--surface); stroke-width: 3; }
+.mix .node text { font: 600 18px/1 var(--f-mono); fill: var(--accent); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.mix .node.stop circle { fill: var(--take-soft); }
+.mix .node.stop text { fill: var(--take); }
+.mix .node.info circle { fill: var(--code-bg); }
+.mix .node.info text { fill: var(--muted); }
+.mix .node:hover circle, .mix .node:focus-visible circle, .mix .node.on circle { stroke: var(--accent); }
+.mix .link.off { opacity: 0.1; }
+.legend { display: grid; gap: 0.4rem; font-size: var(--step--1); color: var(--muted); margin: 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 0.5rem; }
+.legend svg { width: 44px; height: 14px; flex: none; }
+.mix-caption { min-height: 3.2em; }
+.mix-caption b { font-family: var(--f-mono); }
 
 .law { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; }
 .law > div { display: grid; gap: 0.5rem; align-content: start; border-top: 1px solid var(--line); padding-top: 1rem; }
@@ -274,7 +290,7 @@ footer { padding-block: 4rem 3rem; }
 footer .wrap { border-top: 1px solid var(--line); padding-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; color: var(--muted); font-size: var(--step--1); }
 
 @media (max-width: 860px) {
-  .hero .wrap, .reader-top, .two, .combo, .law { grid-template-columns: minmax(0, 1fr); }
+  .hero .wrap, .reader-top, .two, .law, .mix-graphs { grid-template-columns: minmax(0, 1fr); }
   .states { grid-template-columns: minmax(0, 1fr); }
   .right { grid-template-columns: minmax(0, 1fr) auto; }
   .right .why { grid-column: 1 / -1; }
@@ -617,13 +633,28 @@ Warranty: The icons are guaranteed free of any third-party rights.
       </ul>
     </div>
 
-    <div class="panel combo">
-      <div class="stack">
-        <label class="label" for="combo-input">Pills to combine (one per line)</label>
-        <textarea id="combo-input" spellcheck="false"></textarea>
-        <div class="presets" id="presets"></div>
+    <div class="panel mix" id="mix">
+      <div class="mix-graphs">
+        <figure>
+          <span class="label" id="mix-ok-title">Which letters can be mixed</span>
+          <svg id="mix-ok" viewBox="0 0 440 440" role="group" aria-labelledby="mix-ok-title"></svg>
+          <ul class="legend">
+            <li><svg viewBox="0 0 44 14" aria-hidden="true"><line class="edge ok" x1="0" y1="7" x2="44" y2="7"/></svg>Can be mixed</li>
+            <li><svg viewBox="0 0 44 14" aria-hidden="true"><line class="edge ok maybe" x1="0" y1="7" x2="44" y2="7"/></svg>Only if the <code>S</code> pill has the letter too</li>
+            <li><svg viewBox="0 0 44 14" aria-hidden="true"></svg>No line: can’t be mixed</li>
+          </ul>
+        </figure>
+        <figure>
+          <span class="label" id="mix-no-title">Which letters can’t be mixed</span>
+          <svg id="mix-no" viewBox="0 0 440 440" role="group" aria-labelledby="mix-no-title"></svg>
+          <ul class="legend">
+            <li><svg viewBox="0 0 44 14" aria-hidden="true"><line class="edge" x1="0" y1="7" x2="44" y2="7"/><circle class="cross-bg" cx="22" cy="7" r="6"/><path class="cross" d="M18.5 3.5l7 7M25.5 3.5l-7 7"/></svg>Can’t be mixed</li>
+            <li><svg viewBox="0 0 44 14" aria-hidden="true"><line class="edge maybe" x1="0" y1="7" x2="44" y2="7"/><circle class="cross-bg" cx="22" cy="7" r="6"/><path class="cross" d="M18.5 3.5l7 7M25.5 3.5l-7 7"/></svg>Only if the <code>S</code> pill has the letter too</li>
+            <li><svg viewBox="0 0 44 14" aria-hidden="true"></svg>No line: mix freely</li>
+          </ul>
+        </figure>
       </div>
-      <div class="verdict" id="verdict" aria-live="polite"></div>
+      <p class="mix-caption" id="mix-caption" aria-live="polite"></p>
     </div>
   </div>
 </section>
@@ -812,11 +843,6 @@ Warranty: The icons are guaranteed free of any third-party rights.
     { pill: '(1N]', title: 'Invention disclosure', text: 'Publish to prove the date and authorship of an idea, without letting anyone use it.' },
     { pill: '(1P]', title: 'Canary', text: 'Decoy text hidden in a site. If it shows up in a dataset or a model’s output, the scraper ignored the pills.' }
   ];
-  const PRESETS = [
-    { name: 'Compatible', text: '(1A]\n(1AC]\n(1AT]' },
-    { name: 'Share-alike clash', text: '(1AS]\n(1ACM]' },
-    { name: 'Contains poison', text: '(1A]\n(1P]' }
-  ];
 
   const $ = (id) => document.getElementById(id);
   function el(tag, cls, text) {
@@ -975,66 +1001,115 @@ Warranty: The icons are guaranteed free of any third-party rights.
     rec.append(card);
   }
 
-  // ---------- Combination ----------
-  const combo = $('combo-input');
-  function combine() {
-    const lines = combo.value.split('\n').map((s) => s.trim()).filter(Boolean);
-    const v = $('verdict');
-    v.replaceChildren();
-    const bad = lines.filter((l) => !parse(l));
-    if (!lines.length) { v.append(el('p', 'caption', 'Enter at least one pill.')); return; }
-    if (bad.length) { v.append(el('p', 'err', 'Not a pill: ' + bad.join(', '))); return; }
-    const items = lines.map((l) => { const p = parse(l); return { s: l, p, E: effective(p) }; });
-    const blocks = [], notes = [];
-    for (const it of items) {
-      if (it.E.has('P')) blocks.push(it.s + ' is poison: it can’t be used at all.');
-      else if (it.E.has('N')) blocks.push(it.s + ' is proof only: it can’t go into anything.');
-      else if (it.E.has('D')) blocks.push(it.s + ' has D: it can’t go, recognizably, into another work.');
-    }
-    const sItems = items.filter((it) => it.E.has('S'));
-    if (sItems.length) {
-      const ref = sItems[0];
-      const refL = sortLetters(ref.E);
-      for (const it of sItems.slice(1)) {
-        if (sortLetters(it.E) !== refL) blocks.push(ref.s + ' and ' + it.s + ' are both share-alike with different letters: each demands its own pill on the result.');
+  // ---------- Mixing graphs ----------
+  // Can contents carrying these letter sets be combined? See "Incompatible combinations are forbidden".
+  function mixable(sets) {
+    if (sets.some((E) => E.has('N') || E.has('P') || E.has('D'))) return false;
+    const s = sets.find((E) => E.has('S'));
+    return !s || sets.every((E) => [...E].every((c) => s.has(c)) && (!E.has('S') || E.size === s.size));
+  }
+  const clash = (a, b) => !mixable([new Set(a), new Set(b)]);
+  // Every pair of one-letter pills. A clash is "maybe" when it clears once one pill also
+  // carries the other's letter: (1AS] takes (1A], (1S] doesn't.
+  const PAIRS = [];
+  for (const a of ORDER) for (const b of ORDER) {
+    if (a > b) continue;
+    const no = clash(a, b);
+    PAIRS.push({ a, b, no, maybe: no && a !== b && (!clash(a + b, b) || !clash(a, a + b)) });
+  }
+  const pairOf = (x, y) => PAIRS.find((e) => (e.a === x && e.b === y) || (e.a === y && e.b === x));
+
+  // Ring order picked so that no two crosses overlap.
+  const RING = 'NACSDFMRTPW', MID = 220, RAD = 165;
+  const at = {};
+  [...RING].forEach((c, i) => {
+    const t = -Math.PI / 2 + i * 2 * Math.PI / RING.length;
+    at[c] = { x: MID + RAD * Math.cos(t), y: MID + RAD * Math.sin(t), dx: Math.cos(t), dy: Math.sin(t) };
+  });
+  function sv(tag, cls, attrs) {
+    const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    if (cls) e.setAttribute('class', cls);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  const GRAPHS = [
+    { svg: $('mix-ok'), ok: true, keep: (e) => e.a !== e.b && (!e.no || e.maybe) },
+    { svg: $('mix-no'), ok: false, keep: (e) => e.no }
+  ];
+  for (const G of GRAPHS) {
+    const edgeLayer = sv('g'), crosses = sv('g'), dots = sv('g');
+    G.svg.append(edgeLayer, crosses, dots);
+    G.links = [];
+    G.nodes = {};
+    for (const e of PAIRS.filter(G.keep)) {
+      const p = at[e.a], q = at[e.b];
+      const cls = 'edge link' + (G.ok ? ' ok' : '') + (e.maybe ? ' maybe' : '');
+      let line, x, y;
+      if (e.a === e.b) {
+        // A pill that can't be mixed with another pill carrying the same letter: a loop outside the ring.
+        line = sv('circle', cls, { cx: p.x + p.dx * 30, cy: p.y + p.dy * 30, r: 13 });
+        x = p.x + p.dx * 43; y = p.y + p.dy * 43;
+      } else {
+        line = sv('line', cls, { x1: p.x, y1: p.y, x2: q.x, y2: q.y });
+        x = (p.x + q.x) / 2; y = (p.y + q.y) / 2;
       }
-      for (const it of items.filter((x) => !x.E.has('S'))) {
-        const extra = [...ORDER].filter((c) => it.E.has(c) && !ref.E.has(c));
-        if (extra.length) blocks.push(it.s + ' adds ' + extra.join(', ') + ', but ' + ref.s + ' requires the result to carry exactly its own pill.');
-      }
+      edgeLayer.append(line);
+      G.links.push({ e, el: line });
+      if (G.ok) continue;
+      const cross = sv('g', 'link');
+      cross.append(sv('circle', 'cross-bg', { cx: x, cy: y, r: 6 }),
+        sv('path', 'cross', { d: `M${x - 3.5} ${y - 3.5}l7 7M${x + 3.5} ${y - 3.5}l-7 7` }));
+      crosses.append(cross);
+      G.links.push({ e, el: cross });
     }
-    const union = new Set();
-    items.forEach((it) => it.E.forEach((c) => union.add(c)));
-    if (!blocks.length) {
-      if (union.has('M')) notes.push('Contains M: a person may combine these, a machine may not. Keep it out of AI training sets.');
-      if (union.has('C') && union.has('F')) notes.push('C wins over F: the result can’t be used commercially.');
-      if (union.has('A')) notes.push('Credit every author whose pill has A.');
-    }
-    const head = el('div', 'vh');
-    head.append(el('span', 'chip ' + (blocks.length ? 'no' : 'yes'), blocks.length ? 'Can’t be combined' : 'Compatible'));
-    if (!blocks.length) {
-      const cap = el('span', 'capsule sm');
-      cap.append(el('span', 'cap-l', '(1'), el('span', 'cap-r', sortLetters(union) + ']'));
-      head.append(el('span', null, 'The result carries'), cap);
-    }
-    v.append(head);
-    if (blocks.length || notes.length) {
-      const ul = el('ul');
-      blocks.forEach((t) => ul.append(el('li', 'block', t)));
-      notes.forEach((t) => ul.append(el('li', 'note', t)));
-      v.append(ul);
+    for (const c of RING) {
+      const g = sv('g', 'node' + ('NP'.includes(c) ? ' stop' : c === 'W' ? ' info' : ''),
+        { tabindex: 0, role: 'button', 'aria-label': c + ', ' + SHORT[c][0] });
+      g.append(sv('circle', null, { cx: at[c].x, cy: at[c].y, r: 20 }), sv('text', null, { x: at[c].x, y: at[c].y }));
+      g.lastChild.textContent = c;
+      const pick = () => { pinned = pinned === c ? null : c; show(c); };
+      g.addEventListener('mouseenter', () => show(c));
+      g.addEventListener('mouseleave', () => show(pinned));
+      g.addEventListener('focus', () => show(c));
+      g.addEventListener('blur', () => show(pinned));
+      g.addEventListener('click', pick);
+      g.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(); } });
+      G.nodes[c] = g;
+      dots.append(g);
     }
   }
-  const presets = $('presets');
-  for (const pr of PRESETS) {
-    const b = el('button', 'btn', pr.name);
-    b.type = 'button';
-    b.addEventListener('click', () => { combo.value = pr.text; combine(); });
-    presets.append(b);
+
+  const L = (list) => list.map((k) => '<b>' + k + '</b>').join(', ');
+  function describe(c) {
+    if (!c) return 'Point at a letter, or tap it, to see what it can be mixed with.';
+    const no = [], maybe = [], free = [];
+    for (const k of ORDER) {
+      if (k === c) continue;
+      const e = pairOf(c, k);
+      (e.maybe ? maybe : e.no ? no : free).push(k);
+    }
+    const self = pairOf(c, c).no;
+    const out = ['<b>' + c + '</b> · ' + SHORT[c][0] + '.'];
+    if (self && !free.length && !maybe.length) out.push('It can’t be mixed with any pill, not even another <b>' + c + '</b> one.');
+    else if (no.length) out.push('It can’t be mixed with ' + L(no) + (self ? ', nor with another <b>' + c + '</b> pill' : '') + '.');
+    if (free.length) out.push('It mixes freely with ' + L(free) + '.');
+    if (maybe.length && c === 'S') out.push('With ' + L(maybe) + ', only when the <b>S</b> pill carries that letter too: <b>(1AS]</b> takes <b>(1A]</b>, <b>(1S]</b> doesn’t. Two <b>S</b> pills mix only when they have the same letters.');
+    else if (maybe.length) out.push('It mixes with ' + L(maybe) + ' only when that pill carries <b>' + c + '</b> too.');
+    return out.join(' ');
   }
-  combo.value = PRESETS[1].text;
-  combo.addEventListener('input', combine);
-  combine();
+
+  let pinned = null;
+  function show(c) {
+    for (const G of GRAPHS) {
+      for (const { e, el } of G.links) el.classList.toggle('off', e.a !== c && e.b !== c);
+      for (const k of ORDER) {
+        G.nodes[k].classList.toggle('on', k === c);
+        G.nodes[k].setAttribute('aria-pressed', k === pinned ? 'true' : 'false');
+      }
+    }
+    $('mix-caption').innerHTML = describe(c);
+  }
+  show(null);
 
   // ---------- Tabs ----------
   const tabs = [...document.querySelectorAll('[role="tab"]')];
