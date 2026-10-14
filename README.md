@@ -1,7 +1,10 @@
 
 # Code pill
 
-A licensing scheme for humans and machines — specification version 1
+A licensing scheme for humans and machines — specification version 1.
+
+
+[Interactive license content here](https://x-ryl669.github.io/codepill)
 
 ## What are code pills?
 
